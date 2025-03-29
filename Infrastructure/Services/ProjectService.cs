@@ -18,7 +18,7 @@ namespace Infrastructure.Services
         private readonly IStatusService _statusService = statusService;
 
 
-        public async Task<bool> CreateProjectAsync(AddProjectFormData formData, string defaultStatus = "STARTED")
+        public async Task<bool> CreateProjectAsync(AddProjectFormData formData, string defaultStatus = "started")
         {
             if (formData == null)
                 return false;
