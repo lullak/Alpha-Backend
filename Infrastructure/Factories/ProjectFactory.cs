@@ -17,6 +17,7 @@ namespace Infrastructure.Factories
                     Description = entity.Description,
                     StartDate = entity.StartDate,
                     EndDate = entity.EndDate,
+                    Budget = entity.Budget,
                     Client = new Client
                     {
                         Id = entity.Client.Id,
