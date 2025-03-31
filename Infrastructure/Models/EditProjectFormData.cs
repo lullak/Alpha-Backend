@@ -25,5 +25,6 @@ namespace Infrastructure.Models
 
         [Required]
         public int StatusId { get; set; }
+
     }
 }
