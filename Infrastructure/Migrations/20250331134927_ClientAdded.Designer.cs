@@ -4,6 +4,7 @@ using Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250331134927_ClientAdded")]
+    partial class ClientAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,12 +53,13 @@ namespace Infrastructure.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("Infrastructure.Data.Entities.ClientInformationEntity", b =>
+            modelBuilder.Entity("Infrastructure.Data.Entities.ClientInformation", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClientBillingAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientBillingCity")
@@ -63,9 +67,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientBillingPostalCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientBillingReference")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientID")
@@ -164,11 +170,11 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Infrastructure.Data.Entities.ClientInformationEntity", b =>
+            modelBuilder.Entity("Infrastructure.Data.Entities.ClientInformation", b =>
                 {
                     b.HasOne("Infrastructure.Data.Entities.ClientEntity", "Client")
                         .WithOne("Information")
-                        .HasForeignKey("Infrastructure.Data.Entities.ClientInformationEntity", "ClientID")
+                        .HasForeignKey("Infrastructure.Data.Entities.ClientInformation", "ClientID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -204,8 +210,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Data.Entities.ClientEntity", b =>
                 {
-                    b.Navigation("Information")
-                        .IsRequired();
+                    b.Navigation("Information");
 
                     b.Navigation("Projects");
                 });
