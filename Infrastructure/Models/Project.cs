@@ -13,5 +13,6 @@
         public Client Client { get; set; } = null!;
         public User User { get; set; } = null!;
         public Status Status { get; set; } = null!;
+        public DateTime Created { get; set; }
     }
 }

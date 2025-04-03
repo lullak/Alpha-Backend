@@ -18,6 +18,7 @@ namespace Infrastructure.Factories
                     StartDate = entity.StartDate,
                     EndDate = entity.EndDate,
                     Budget = entity.Budget,
+                    Created = entity.Created,
                     Client = new Client
                     {
                         Id = entity.Client.Id,
@@ -69,7 +70,8 @@ namespace Infrastructure.Factories
                     EndDate = formData.EndDate,
                     Budget = formData.Budget,
                     ClientId = formData.ClientId,
-                    UserId = formData.UserId
+                    UserId = formData.UserId,
+                    Created = DateTime.Now
                 };
         }
     }
