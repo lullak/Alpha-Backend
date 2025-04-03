@@ -1,10 +1,16 @@
 using Infrastructure.Data.Contexts;
+using Infrastructure.Data.Entities;
+using Infrastructure.Manager;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation.Extensions.Middlewares;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -37,6 +43,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
+builder.Services.AddIdentity<UserEntity, IdentityRole>().AddEntityFrameworkStores<DataContext>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddTransient<ITokenManager, TokenManager>();
+
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -47,9 +57,33 @@ builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!);
+    var issuer = builder.Configuration["Jwt:Issuer"]!;
 
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateLifetime = true,
+        RequireExpirationTime = true,
+        ClockSkew = TimeSpan.FromMinutes(5),
+        ValidateIssuer = true,
+        ValidIssuer = issuer,
+        ValidateAudience = false,
+    };
+});
 
 var app = builder.Build();
+await Infrastructure.Data.SeedData.SeedRoleData.SetRolesAsync(app);
 app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI(x =>

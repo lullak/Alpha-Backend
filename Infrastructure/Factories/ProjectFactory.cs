@@ -24,7 +24,7 @@ namespace Infrastructure.Factories
                         Id = entity.Client.Id,
                         ClientName = entity.Client.ClientName
                     },
-                    User = new User
+                    User = new Models.User
                     {
                         Id = entity.User.Id,
                         FirstName = entity.User.FirstName,
