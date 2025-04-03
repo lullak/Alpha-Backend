@@ -17,7 +17,6 @@ namespace Infrastructure.Factories
                     ClientName = entity.ClientName,
                     ClientEmail = entity.ClientEmail,
                     ClientPhone = entity.ClientPhone,
-                    Created = entity.Created,
                     Information = new ClientInformation
                     {
                         Id = entity.Information.Id,

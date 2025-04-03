@@ -54,6 +54,7 @@ namespace Infrastructure.Factories
                     ClientId = formData.ClientId,
                     UserId = formData.UserId,
                     StatusId = formData.StatusId,
+                    Created = formData.Created,
                 };
         }
 
@@ -71,7 +72,7 @@ namespace Infrastructure.Factories
                     Budget = formData.Budget,
                     ClientId = formData.ClientId,
                     UserId = formData.UserId,
-                    Created = DateTime.Now
+                    Created = DateTime.Now,
                 };
         }
     }

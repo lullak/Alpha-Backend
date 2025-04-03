@@ -16,6 +16,7 @@ namespace Infrastructure.Models
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public decimal? Budget { get; set; }
+        public DateTime Created { get; set; }
 
         [Required]
         public string ClientId { get; set; } = null!;

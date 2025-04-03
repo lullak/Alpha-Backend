@@ -32,6 +32,6 @@ namespace Infrastructure.Data.Entities
         [ForeignKey(nameof(Status))]
         public int StatusId { get; set; }
         public virtual StatusEntity Status { get; set; } = null!;
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime Created { get; set; }
     }
 }

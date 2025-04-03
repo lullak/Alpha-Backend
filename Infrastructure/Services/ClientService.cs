@@ -47,7 +47,7 @@ namespace Infrastructure.Services
 
         public async Task<Client> GetUserByClientNameAsync(string clientName)
         {
-            var entity = await _clientRepository.GetAsync(x => x.ClientName.Equals(clientName, StringComparison.CurrentCultureIgnoreCase));
+            var entity = await _clientRepository.GetAsync(x => x.ClientName.Equals(clientName));
             return entity == null ? null! : new Client
             {
                 Id = entity.Id,
