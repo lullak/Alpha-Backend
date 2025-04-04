@@ -4,6 +4,7 @@ using Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250403101816_imageuser")]
+    partial class imageuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Infrastructure.Data.Entities.ClientInformationEntity", b =>
@@ -74,7 +77,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ClientID")
                         .IsUnique();
 
-                    b.ToTable("ClientInformations", (string)null);
+                    b.ToTable("ClientInformations");
                 });
 
             modelBuilder.Entity("Infrastructure.Data.Entities.ProjectEntity", b =>
@@ -123,7 +126,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Infrastructure.Data.Entities.StatusEntity", b =>
@@ -140,7 +143,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statuses", (string)null);
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("Infrastructure.Data.Entities.UserAddressEntity", b =>
@@ -159,7 +162,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserAddresses", (string)null);
+                    b.ToTable("UserAddresses");
                 });
 
             modelBuilder.Entity("Infrastructure.Data.Entities.UserEntity", b =>

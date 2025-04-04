@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Factories;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Services
 {
@@ -12,10 +13,12 @@ namespace Infrastructure.Services
         Task<IEnumerable<Project>> GetProjectsAsync();
         Task<bool> UpdateProjectAsync(EditProjectFormData formData);
     }
-    public class ProjectService(IProjectRepository projectRepository, IStatusService statusService) : IProjectService
+    public class ProjectService(IProjectRepository projectRepository, IStatusService statusService, IMemoryCache cache) : IProjectService
     {
         private readonly IProjectRepository _projectRepository = projectRepository;
         private readonly IStatusService _statusService = statusService;
+        private readonly IMemoryCache _cache = cache;
+        private const string _cacheKey_All = "Project_all";
 
 
         public async Task<bool> CreateProjectAsync(AddProjectFormData formData, string defaultStatus = "started")
@@ -32,6 +35,9 @@ namespace Infrastructure.Services
                 return false;
 
             var result = await _projectRepository.AddAsync(projectEntity);
+            if (result)
+                _cache.Remove(_cacheKey_All);
+
             return result;
         }
 

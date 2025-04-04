@@ -24,7 +24,7 @@ namespace Infrastructure.Factories
                         Id = entity.Client.Id,
                         ClientName = entity.Client.ClientName
                     },
-                    User = new Models.User
+                    User = new User
                     {
                         Id = entity.User.Id,
                         FirstName = entity.User.FirstName,
@@ -72,7 +72,7 @@ namespace Infrastructure.Factories
                     Budget = formData.Budget,
                     ClientId = formData.ClientId,
                     UserId = formData.UserId,
-                    Created = DateTime.Now,
+                    Created = formData.Created,
                 };
         }
     }

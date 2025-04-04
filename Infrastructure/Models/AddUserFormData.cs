@@ -1,20 +1,28 @@
-﻿using Infrastructure.Data.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Infrastructure.Models
 {
-    public class User
+    public class AddUserFormData
     {
-        public string Id { get; set; } = null!;
+
+        [Required]
         public string FirstName { get; set; } = null!;
+
+        [Required]
         public string LastName { get; set; } = null!;
+
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = null!;
-        public string? PhoneNumber { get; set; }
+
         public string? Image { get; set; }
+        public string? JobTitle { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? StreetName { get; set; }
         public string? PostalCode { get; set; }
         public string? City { get; set; }
-        public string Role { get; set; } = null!;
-        public string? JobTitle { get; set; }
 
+        [Required]
+        public string Role { get; set; } = "User"; 
     }
 }

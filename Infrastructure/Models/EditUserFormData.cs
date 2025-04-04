@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-public class UpdateUserFormData
+public class EditUserFormData
 {
     [Required]
-    public string UserId { get; set; } = null!;
+    public string Id { get; set; } = null!;
+    public string? Image { get; set; }
 
     [Required]
     public string FirstName { get; set; } = null!;
@@ -22,5 +23,6 @@ public class UpdateUserFormData
     public string? PostalCode { get; set; }
 
     public string? City { get; set; }
+    public string Role { get; set; } = null!;
 
 }

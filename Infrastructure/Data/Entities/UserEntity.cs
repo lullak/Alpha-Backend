@@ -8,6 +8,7 @@ namespace Infrastructure.Data.Entities
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;   
         public string? JobTitle { get; set; }
+        public string? Image { get; set; }
         public UserAddressEntity? Address { get; set; }
 
 

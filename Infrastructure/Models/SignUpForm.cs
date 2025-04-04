@@ -5,11 +5,9 @@ namespace Infrastructure.Models
     public class SignUpForm
     {
         [Required]
-        [MinLength(2)]
         public string FirstName { get; set; } = null!;
 
         [Required]
-        [MinLength(2)]
         public string LastName { get; set; } = null!;
 
         [Required]
