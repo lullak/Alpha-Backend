@@ -15,5 +15,12 @@ namespace Presentation.Controllers
             var result = await _statusService.GetStatusesAsync();
             return Ok(result);
         }
+
+        [HttpGet("{statusName}")]
+        public async Task<IActionResult> Get(string statusName)
+        {
+            var result = await _statusService.GetStatusByStatusNameAsync(statusName);
+            return result == null ? NotFound() : Ok(result);
+        }
     }
 }

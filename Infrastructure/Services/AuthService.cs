@@ -2,6 +2,7 @@
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Services
 {
@@ -12,11 +13,13 @@ namespace Infrastructure.Services
         Task<IdentityResult> SignUpAsync(SignUpForm form);
     }
 
-    public class AuthService(UserManager<UserEntity> userManager, SignInManager<UserEntity> signManager, RoleManager<IdentityRole> roleManager) : IAuthService
+    public class AuthService(UserManager<UserEntity> userManager, SignInManager<UserEntity> signManager, RoleManager<IdentityRole> roleManager, IMemoryCache cache) : IAuthService
     {
         private readonly UserManager<UserEntity> _userManager = userManager;
         private readonly SignInManager<UserEntity> _signManager = signManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+        private readonly IMemoryCache _cache = cache;
+        private const string _cacheKey_All = "User_all";
 
         public async Task<IdentityResult> SignUpAsync(SignUpForm model)
         {
@@ -39,7 +42,9 @@ namespace Infrastructure.Services
                 }
 
                 await _userManager.AddToRoleAsync(user, userRole);
-                
+
+                _cache.Remove(_cacheKey_All);
+
             }
             return identityResult;
         }

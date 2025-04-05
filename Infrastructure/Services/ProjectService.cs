@@ -44,21 +44,42 @@ namespace Infrastructure.Services
 
         public async Task<IEnumerable<Project>> GetProjectsAsync()
         {
+            if (_cache.TryGetValue(_cacheKey_All, out IEnumerable<Project>? cachedItems))
+                return cachedItems;
+
+ 
+            var projects = await SetCache();
+
+            return projects;
+        }
+        public async Task<IEnumerable<Project>> SetCache()
+        {
+            _cache.Remove(_cacheKey_All);
             var entites = await _projectRepository.GetAllAsync(
-                orderByDescending: true,
-                sortBy: x => x.Created,
-                filterBy: null,
-                i => i.User,
-                i => i.Client,
-                i => i.Status
-            );
+               orderByDescending: true,
+               sortBy: x => x.Created,
+               filterBy: null,
+               i => i.User,
+               i => i.Client,
+               i => i.Status
+           );
 
             var projects = entites.Select(ProjectFactory.ToModel);
+            _cache.Set(_cacheKey_All, projects, TimeSpan.FromMinutes(10));
+
             return projects;
         }
 
-        public async Task<Project> GetProjectByIdAsync(string id)
+        public async Task<Project?> GetProjectByIdAsync(string id)
         {
+
+            if (_cache.TryGetValue(_cacheKey_All, out IEnumerable<Project>? cachedItems))
+            {
+                var cachedProject = cachedItems?.FirstOrDefault(x => x.Id == id);
+                if (cachedProject != null)
+                    return cachedProject;
+            }
+
             var entity = await _projectRepository.GetAsync(
 
                 x => x.Id == id,
@@ -67,7 +88,14 @@ namespace Infrastructure.Services
                 i => i.Status
             );
 
-            return ProjectFactory.ToModel(entity);
+            if (entity == null)
+                return null;
+
+            var project = ProjectFactory.ToModel(entity);
+
+            await SetCache();
+
+            return project;
         }
 
         public async Task<bool> UpdateProjectAsync(EditProjectFormData formData)
@@ -80,13 +108,29 @@ namespace Infrastructure.Services
 
             var projectEntity = ProjectFactory.ToEntity(formData);
             var result = await _projectRepository.UpdateAsync(projectEntity);
+            if (result)
+            {
+                _cache.Remove(_cacheKey_All);
+            }
             return result;
         }
 
 
         public async Task<bool> DeleteProjectAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return false;
+
+            var project = await _projectRepository.GetAsync(x => x.Id == id);
+            if (project == null)
+                return false;
+
+
             var result = await _projectRepository.DeleteAsync(x => x.Id == id);
+            if (result)
+            {
+                _cache.Remove(_cacheKey_All);
+            }
             return result;
         }
     }

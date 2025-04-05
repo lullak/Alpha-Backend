@@ -15,6 +15,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen(c =>
 {
     //Tagit hjälp av AI för att sätta upp API key Authentication för swagger

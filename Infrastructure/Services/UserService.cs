@@ -4,6 +4,7 @@ using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Services
 {
@@ -17,19 +18,25 @@ namespace Infrastructure.Services
     }
 
     //Mycket osäker på rollhantering och usermanager blev mycket fram och tillbaka med AI här och mycket av koden är därifrån
-    // speciellt för create och update hittade även andra resurser med liknande lösningar.
+    // speciellt för create och update hittade även andra resurser med liknande lösningar. Gäller ej cache.
     //Dock har jag börjat förstå hur man först sätter upp roller med rolemanager för att sedan använda
     //usermangers metoder för att ta bort och lägga till roller
-    public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, IUserAddressRepository addressRepository) : IUserService
+    public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, IUserAddressRepository addressRepository, IMemoryCache cache) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly UserManager<UserEntity> _userManager = userManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
         private readonly IUserAddressRepository _addressRepository = addressRepository;
+        private readonly IMemoryCache _cache = cache;
+        private const string _cacheKey_All = "User_all";
 
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
+            if (_cache.TryGetValue(_cacheKey_All, out IEnumerable<User>? cachedItems))
+                return cachedItems;
+
+            _cache.Remove(_cacheKey_All);
             var entities = await _userRepository.GetAllAsync(
                 orderByDescending: false,
                 sortBy: x => x.FirstName,
@@ -45,6 +52,7 @@ namespace Infrastructure.Services
                 var user = UserFactory.ToModel(entity, role);
                 users.Add(user);
             }
+            _cache.Set(_cacheKey_All, users, TimeSpan.FromMinutes(10));
 
             return users;
 
@@ -52,10 +60,23 @@ namespace Infrastructure.Services
 
         public async Task<User> GetUserByIdAsync(string id)
         {
+            if (_cache.TryGetValue(_cacheKey_All, out IEnumerable<User>? cachedItems))
+            {
+                var cachedProject = cachedItems?.FirstOrDefault(x => x.Id == id);
+                if (cachedProject != null)
+                    return cachedProject;
+            }
+
+            _cache.Remove(_cacheKey_All);
             var entity = await _userRepository.GetAsync(x => x.Id == id, i => i.Address);
+            if (entity == null)
+                return null!;
             var roles = await _userManager.GetRolesAsync(entity);
             var role = roles.FirstOrDefault() ?? "User";
-            return UserFactory.ToModel(entity, role);
+            var users = UserFactory.ToModel(entity, role);
+
+            _cache.Set(_cacheKey_All, users, TimeSpan.FromMinutes(10));
+            return users;
         }
 
         public async Task<(IdentityResult Result, bool Success)> CreateUserAsync(AddUserFormData formData, string defaultRole = "User")
@@ -111,12 +132,18 @@ namespace Infrastructure.Services
                 await _userManager.DeleteAsync(user);
                 return (roleResult, false);
             }
+            
+            _cache.Remove(_cacheKey_All);
+
 
             return (IdentityResult.Success, true);
         }
 
         public async Task<bool> DeleteUserAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return false;
+
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
@@ -124,6 +151,10 @@ namespace Infrastructure.Services
             }
 
             var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                _cache.Remove(_cacheKey_All);
+            }
             return result.Succeeded;
         }
 
@@ -183,7 +214,10 @@ namespace Infrastructure.Services
                 {
                     return false;
                 }
+                    
             }
+
+            _cache.Remove(_cacheKey_All);
 
             return true;
         }
