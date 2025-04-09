@@ -25,7 +25,12 @@ namespace Presentation.Controllers
                     var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
                     if (signInResult.Succeeded)
                     {
-                        var token = _TokenManager.GenerateJwtToken(user!, "User");
+                        var roles = await _userManager.GetRolesAsync(user);
+                        var role = roles.FirstOrDefault() ?? "User";
+
+                        var token = _TokenManager.GenerateJwtToken(user!, role);
+                        // Skickar med jwt-token till frontend med utöver det kollar frontend på rollen som i detta fall 
+                        // anges av i user
                         return Ok(new
                         {
                             token,
