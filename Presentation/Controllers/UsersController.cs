@@ -1,4 +1,5 @@
-﻿using Infrastructure.Models;
+﻿using Infrastructure.Handlers;
+using Infrastructure.Models;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,15 +7,19 @@ namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(IUserService userService) : ControllerBase
+    public class UsersController(IUserService userService, IFileHandler fileHandler) : ControllerBase
     {
         private readonly IUserService _userService = userService;
+        private readonly IFileHandler _fileHandler = fileHandler;
 
         [HttpPost]
         public async Task<IActionResult> Create(AddUserFormData formData)
         {
             if (!ModelState.IsValid)
                 return BadRequest(formData);
+
+            //lägg till bildhantering
+            //var imageFileUri = await _fileHandler.UploadFileAsync(formData.Image);
 
             var (result, success) = await _userService.CreateUserAsync(formData);
 

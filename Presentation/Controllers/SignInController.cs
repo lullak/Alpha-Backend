@@ -1,9 +1,6 @@
-﻿using Infrastructure.Manager;
-using Infrastructure.Models;
-using Infrastructure.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Infrastructure.Models;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {

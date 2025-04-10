@@ -1,5 +1,6 @@
 using Infrastructure.Data.Contexts;
 using Infrastructure.Data.Entities;
+using Infrastructure.Handlers;
 using Infrastructure.Manager;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -42,6 +43,10 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+var connectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
+var containerName = "images";
+builder.Services.AddScoped<IFileHandler>(_ => new AzureFileHandler(connectionString!, containerName));
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
 builder.Services.AddIdentity<UserEntity, IdentityRole>().AddEntityFrameworkStores<DataContext>();
