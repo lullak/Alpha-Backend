@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Factories;
+using Infrastructure.Handlers;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,12 +14,13 @@ namespace Infrastructure.Services
         Task<IEnumerable<Project>> GetProjectsAsync();
         Task<bool> UpdateProjectAsync(EditProjectFormData formData);
     }
-    public class ProjectService(IProjectRepository projectRepository, IStatusService statusService, IMemoryCache cache) : IProjectService
+    public class ProjectService(IProjectRepository projectRepository, IStatusService statusService, IMemoryCache cache, IFileHandler fileHandler) : IProjectService
     {
         private readonly IProjectRepository _projectRepository = projectRepository;
         private readonly IStatusService _statusService = statusService;
         private readonly IMemoryCache _cache = cache;
         private const string _cacheKey_All = "Project_all";
+        private readonly IFileHandler _fileHandler = fileHandler;
 
 
         public async Task<bool> CreateProjectAsync(AddProjectFormData formData, string defaultStatus = "started")
@@ -26,7 +28,13 @@ namespace Infrastructure.Services
             if (formData == null)
                 return false;
 
-            var projectEntity = ProjectFactory.ToEntity(formData);
+            string? imageFileUri = null;
+            if (formData.Image != null)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.Image);
+            }
+
+            var projectEntity = ProjectFactory.ToEntity(formData, imageFileUri);
             var status = await _statusService.GetStatusByStatusNameAsync(defaultStatus);
 
             if (status != null && status.Id != 0)
@@ -106,7 +114,14 @@ namespace Infrastructure.Services
             if (!await _projectRepository.ExistsAsync(x => x.Id == formData.Id))
                 return false;
 
-            var projectEntity = ProjectFactory.ToEntity(formData);
+            string? imageFileUri = formData?.Image; 
+
+            if (formData.NewImageFile != null && formData.NewImageFile.Length > 0)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.NewImageFile);
+            }
+
+            var projectEntity = ProjectFactory.ToEntity(formData, imageFileUri);
             var result = await _projectRepository.UpdateAsync(projectEntity);
             if (result)
             {

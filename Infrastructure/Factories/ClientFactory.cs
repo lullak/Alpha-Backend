@@ -35,14 +35,14 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static ClientEntity ToEntity(EditClientFormData formData)
+        public static ClientEntity ToEntity(EditClientFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new ClientEntity
                 {
                     Id = formData.Id,
-                    ClientImage = formData.ClientImage,
+                    ClientImage = newImageFileName ?? formData.ClientImage,
                     ClientName = formData.ClientName,
                     ClientEmail = formData.ClientEmail,
                     ClientPhone = formData.ClientPhone,
@@ -58,13 +58,13 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static ClientEntity ToEntity(AddClientFormData formData)
+        public static ClientEntity ToEntity(AddClientFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new ClientEntity
                 {
-                    ClientImage = formData.ClientImage,
+                    ClientImage = newImageFileName,
                     ClientName = formData.ClientName,
                     ClientEmail = formData.ClientEmail,
                     ClientPhone = formData.ClientPhone,

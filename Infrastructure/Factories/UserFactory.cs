@@ -25,14 +25,14 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static UserEntity ToEntity(EditUserFormData formData)
+        public static UserEntity ToEntity(EditUserFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new UserEntity
                 {
                     Id = formData.Id,
-                    Image = formData.Image,
+                    Image = newImageFileName ?? formData.Image,
                     FirstName = formData.FirstName,
                     LastName = formData.LastName,
                     JobTitle = formData.JobTitle,
@@ -47,13 +47,13 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static UserEntity ToEntity(AddUserFormData formData)
+        public static UserEntity ToEntity(AddUserFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new UserEntity
                 {
-                    Image = formData.Image,
+                    Image = newImageFileName,
                     FirstName = formData.FirstName,
                     LastName = formData.LastName,
                     JobTitle = formData.JobTitle,

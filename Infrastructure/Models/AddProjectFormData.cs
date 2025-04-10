@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Infrastructure.Models
 {
     public class AddProjectFormData
     {
-        public string? Image { get; set; }
-
+        public IFormFile? Image { get; set; }
         [Required]
         public string ProjectName { get; set; } = null!;
         public string? Description { get; set; }
