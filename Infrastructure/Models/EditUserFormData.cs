@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 public class EditUserFormData
 {
     [Required]
     public string Id { get; set; } = null!;
     public string? Image { get; set; }
+    public IFormFile? NewImageFile { get; set; }
 
     [Required]
     public string FirstName { get; set; } = null!;

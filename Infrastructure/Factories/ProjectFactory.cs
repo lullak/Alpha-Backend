@@ -38,14 +38,14 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static ProjectEntity ToEntity(EditProjectFormData formData)
+        public static ProjectEntity ToEntity(EditProjectFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new ProjectEntity
                 {
                     Id = formData.Id,
-                    Image = formData.Image,
+                    Image = newImageFileName ?? formData.Image,
                     ProjectName = formData.ProjectName,
                     Description = formData.Description,
                     StartDate = formData.StartDate,
@@ -58,13 +58,13 @@ namespace Infrastructure.Factories
                 };
         }
 
-        public static ProjectEntity ToEntity(AddProjectFormData formData)
+        public static ProjectEntity ToEntity(AddProjectFormData formData, string? newImageFileName = null)
         {
             return formData == null
                 ? null!
                 : new ProjectEntity
                 {
-                    Image = formData.Image,
+                    Image = newImageFileName,
                     ProjectName = formData.ProjectName,
                     Description = formData.Description,
                     StartDate = formData.StartDate,

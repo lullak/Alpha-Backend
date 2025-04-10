@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Infrastructure.Models
 {
@@ -6,7 +7,7 @@ namespace Infrastructure.Models
     {
         [Required]
         public string ClientName { get; set; } = null!;
-        public string? ClientImage { get; set; }
+        public IFormFile? ClientImage { get; set; }
         [Required]
         public string ClientEmail { get; set; } = null!;
         [Required]

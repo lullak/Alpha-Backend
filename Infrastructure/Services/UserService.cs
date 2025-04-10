@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Data.Entities;
 using Infrastructure.Factories;
+using Infrastructure.Handlers;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +22,7 @@ namespace Infrastructure.Services
     // speciellt för create och update hittade även andra resurser med liknande lösningar. Gäller ej cache.
     //Dock har jag börjat förstå hur man först sätter upp roller med rolemanager för att sedan använda
     //usermangers metoder för att ta bort och lägga till roller
-    public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, IUserAddressRepository addressRepository, IMemoryCache cache) : IUserService
+    public class UserService(IUserRepository userRepository, UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, IUserAddressRepository addressRepository, IMemoryCache cache, IFileHandler fileHandler) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly UserManager<UserEntity> _userManager = userManager;
@@ -29,6 +30,7 @@ namespace Infrastructure.Services
         private readonly IUserAddressRepository _addressRepository = addressRepository;
         private readonly IMemoryCache _cache = cache;
         private const string _cacheKey_All = "User_all";
+        private readonly IFileHandler _fileHandler = fileHandler;
 
 
         public async Task<IEnumerable<User>> GetUsersAsync()
@@ -84,6 +86,11 @@ namespace Infrastructure.Services
             if (formData == null)
                 return (IdentityResult.Failed(new IdentityError { Description = "Form data is null" }), false);
 
+            string? imageFileUri = null;
+            if (formData.Image != null)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.Image);
+            }
             var user = new UserEntity
             {
                 UserName = formData.Email,
@@ -92,7 +99,7 @@ namespace Infrastructure.Services
                 LastName = formData.LastName,
                 PhoneNumber = formData.PhoneNumber,
                 JobTitle = formData.JobTitle,
-                Image = formData.Image
+                Image = imageFileUri
             };
 
             string password = "BYTmig123!";
@@ -172,12 +179,20 @@ namespace Infrastructure.Services
                 return false;
             }
 
+            string? imageFileUri = formData?.Image;
+
+            if (formData.NewImageFile != null && formData.NewImageFile.Length > 0)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.NewImageFile);
+            }
+
             userEntity.FirstName = formData.FirstName;
             userEntity.LastName = formData.LastName;
             userEntity.JobTitle = formData.JobTitle;
             userEntity.PhoneNumber = formData.PhoneNumber;
             userEntity.Email = formData.Email;
-            userEntity.Image = formData.Image;
+            userEntity.Image = imageFileUri ?? formData.Image;
+
 
             if (userEntity.Address == null)
             {

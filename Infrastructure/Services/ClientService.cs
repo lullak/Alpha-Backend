@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Factories;
+using Infrastructure.Handlers;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,11 +16,12 @@ namespace Infrastructure.Services
         Task<IEnumerable<Client>> SetCache();
     }
 
-    public class ClientService(IClientRepository clientRepository, IMemoryCache cache) : IClientService
+    public class ClientService(IClientRepository clientRepository, IMemoryCache cache, IFileHandler fileHandler) : IClientService
     {
         private readonly IClientRepository _clientRepository = clientRepository;
         private readonly IMemoryCache _cache = cache;
         private const string _cacheKey_All = "Client_all";
+        private readonly IFileHandler _fileHandler = fileHandler;
 
         public async Task<IEnumerable<Client>> GetClientsAsync()
         {
@@ -62,7 +64,14 @@ namespace Infrastructure.Services
             if (!await _clientRepository.ExistsAsync(x => x.Id == formData.Id))
                 return false;
 
-            var clientEntity = ClientFactory.ToEntity(formData);
+            string? imageFileUri = formData?.ClientImage;
+
+            if (formData.NewImageFile != null && formData.NewImageFile.Length > 0)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.NewImageFile);
+            }
+
+            var clientEntity = ClientFactory.ToEntity(formData, imageFileUri);
             var result = await _clientRepository.UpdateAsync(clientEntity);
             if (result)
             {
@@ -97,7 +106,13 @@ namespace Infrastructure.Services
             if (formData == null)
                 return false;
 
-            var clientEntity = ClientFactory.ToEntity(formData);
+            string? imageFileUri = null;
+            if (formData.ClientImage != null)
+            {
+                imageFileUri = await _fileHandler.UploadFileAsync(formData.ClientImage);
+            }
+
+            var clientEntity = ClientFactory.ToEntity(formData, imageFileUri);
 
             var result = await _clientRepository.AddAsync(clientEntity);
             if (result)

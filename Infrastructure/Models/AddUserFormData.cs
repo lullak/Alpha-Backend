@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Infrastructure.Models
 {
@@ -15,7 +16,7 @@ namespace Infrastructure.Models
         [EmailAddress]
         public string Email { get; set; } = null!;
 
-        public string? Image { get; set; }
+        public IFormFile? Image { get; set; }
         public string? JobTitle { get; set; }
         public string? PhoneNumber { get; set; }
         public string? StreetName { get; set; }
