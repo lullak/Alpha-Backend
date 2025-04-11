@@ -103,7 +103,13 @@ app.UseSwaggerUI(x =>
 app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
 app.UseHttpsRedirection();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+app.UseCors(x => x
+    .WithOrigins(
+        "https://brave-meadow-0a3ae4303.6.azurestaticapps.net",
+        "http://localhost:5173"
+    )
+    .AllowAnyHeader()
+    .AllowAnyMethod());
 app.UseMiddleware<DefaultApiKeyMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
