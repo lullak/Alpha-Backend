@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation.Extensions.Middlewares;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +22,15 @@ builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen(c =>
 {
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+
+    c.EnableAnnotations();
+    c.ExampleFilters();
+
     //Tagit hjälp av AI för att sätta upp API key Authentication för swagger
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web API", Version = "v1", Description = "This is the standard documentation for Alpha BackOffice Portal.", });
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         Description = "API Key authentication",
@@ -44,6 +54,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 var connectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
 var containerName = "images";
 builder.Services.AddScoped<IFileHandler>(_ => new AzureFileHandler(connectionString!, containerName));
