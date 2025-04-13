@@ -10,4 +10,5 @@
 - Azure web app
 - Azure sql database
 - EF
+- API Key
 
