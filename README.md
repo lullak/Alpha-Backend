@@ -1,14 +1,22 @@
 # Alpha backend webapi
 
-- Alpha WebApi.
-
 # Technologies
-- User and role managment using identity
-- Cache managment
-- Token generation
-- Azure blob storage
-- Azure web app
-- Azure sql database
-- EF
-- API Key
+- ASP.NET Core WebAPI
+- Entity Framework Core
+- Microsoft Identity
+- JWT Bearer Tokens
 
+# Documentation
+- Swagger API documentation
+
+# Azure Services
+- Azure Web App - Hosting platform
+- Azure SQL Database - Cloud-based relational database
+- Azure Blob Storage - Cloud object storage for files
+
+# Features
+- Authentication & Authorization
+- JWT Token Generation with configurable expiration
+
+# Performance
+- Caching
