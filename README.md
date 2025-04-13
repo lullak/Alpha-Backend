@@ -16,7 +16,7 @@
 
 # Features
 - Authentication & Authorization
-- JWT Token Generation with configurable expiration
+- JWT Token Generation
 
 # Performance
 - Caching
